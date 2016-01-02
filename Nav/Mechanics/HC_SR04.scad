@@ -7,13 +7,13 @@ module hc_sr04(view=false)
 {
     pcb_width = 45;
     pcb_height = 20.5;
-    pcb_depth = 2.75;
+    pcb_depth = 2.5;
     
-    sensor_diameter = 10;
+    sensor_diameter = 16;
     sensor_depth = 12.5;
     
-    sensor_offset0 = 10;
-    sensor_offset1 = 35;
+    sensor_offset0 = 9;
+    sensor_offset1 = 36;
     
     hole_inset = 1.5;
     hole_diameter = 2;
@@ -96,11 +96,14 @@ module hc_sr04_mount(thickness = 8)
     {
         union()
         {
-            translate([0,-pcb_height/2,-pcb_width/2])
-            cube([thickness, thickness, thickness], center=true);
+            translate([0,-pcb_height/2,-(pcb_width/2 + thickness/2 + 1)])
+            cube([thickness, thickness, thickness*2 + 2], center=true);
             
-            translate([0,pcb_height/2,-pcb_width/2])
-            cube([thickness, thickness, thickness], center=true);
+            translate([0,pcb_height/2,-(pcb_width/2 + thickness/2 + 1)])
+            cube([thickness, thickness, thickness*2 + 2], center=true);
+            
+            translate([0,0,-(pcb_width/2 + thickness/2 + 3)])
+            cube([thickness, thickness*2, thickness*2 - 2], center=true);
         }
 
         

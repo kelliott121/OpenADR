@@ -205,7 +205,7 @@ module motor_assembly(mounted=false, left=false, right=false)
 
 module sonar_assembly(mounted=false)
 {
-    translate([0,0,2.5])
+    translate([0,0,12.5])
     union()
     {
         if (mounted)
