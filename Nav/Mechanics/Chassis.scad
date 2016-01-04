@@ -12,12 +12,9 @@ diameter = 300;
 height = 75;
 thickness = 2.5;
 
-left_plate(mounted=mount_all, front=true);
-left_plate(mounted=mount_all, back=true);
-right_plate(mounted=mount_all, front=true);
-right_plate(mounted=mount_all, back=true);
-front_plate(mounted=mount_all, left=true);
-front_plate(mounted=mount_all, right=true);
+left_plate(mounted=mount_all);
+right_plate(mounted=mount_all);
+front_plate(mounted=mount_all);
 
 module base_plate()
 {
@@ -40,7 +37,7 @@ module left_plate(mounted=false, front=false, back=false)
             {
                 base_plate();
             
-                translate([-(92.5 + 35),0,12.5])
+                translate([-(100 + 30),0,12.5])
                 wheel_well();
             }
 
@@ -60,7 +57,7 @@ module left_plate(mounted=false, front=false, back=false)
                 connection_mount();
             }
     
-            translate([-92.5,0,24.75 + thickness])
+            translate([-100,0,19 + thickness])
             motor_assembly(mounted=mounted);
             
             translate([0,20,0])
@@ -191,7 +188,7 @@ module motor_assembly(mounted=false, left=false, right=false)
             translate([-11.5,0,0])
             motor();
         
-            translate([-35,0,0])
+            translate([-31.5,0,0])
             wheel();
             
             translate([5.25,0,0])

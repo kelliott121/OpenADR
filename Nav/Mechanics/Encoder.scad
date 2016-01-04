@@ -108,18 +108,8 @@ module hall_sensors_mount(diameter=30, thickness=5)
             {
                 cylinder(d=diameter, h=thickness, center=true);
                 
-                translate([diameter/2 + 2.5,0,0])
-                cube([15 + 4.39340, diameter*(sqrt(2)/2), thickness], center=true);
-                
-                translate([25,0,0])
-                difference()
-                {
-                    //rotate([0,45,0])
-                    //cube([thickness*1.5, diameter*(sqrt(2)/2), thickness*1.5], center=true);
-                    
-                    //translate([thickness*2,0,0])
-                    //☺cube([thickness*4, diameter*(sqrt(2)/2), thickness*4], center=true);
-                }
+                translate([diameter/2,0,0])
+                cube([8 + 4.39340, diameter*(sqrt(2)/2), thickness], center=true);
             }
             
             
