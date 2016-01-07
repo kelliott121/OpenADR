@@ -3,6 +3,8 @@ use <Wheel.scad>;
 use <Encoder.scad>;
 use <Battery.scad>;
 use <HC_SR04.scad>;
+use <Caster.scad>;
+use <Microswitch.scad>;
 
 $fn=72;
 
@@ -106,7 +108,21 @@ module front_plate(mounted=false, left=false, right=false)
     {
         union()
         {
-            base_plate();
+            difference()
+            {
+                base_plate();
+                
+                union()
+                {
+                    rotate([0,0,-15])
+                    translate([0,140,0])
+                    caster_mask();
+                    
+                    rotate([0,0,15])
+                    translate([0,140,0])
+                    caster_mask();
+                }
+            }
 
             // Inter-plate connectors
             union()
@@ -138,6 +154,23 @@ module front_plate(mounted=false, left=false, right=false)
                 rotate([0,0,-135])
                 translate([-140,0,0])
                 connection_mount();
+            }
+            
+            // Casters
+            if (mounted)
+            {
+                rotate([0,0,-15])
+                translate([0,140,.4*25.4 - 3.5])
+                caster();
+                
+                rotate([0,0,15])
+                translate([0,140,.4*25.4 - 3.5])
+                caster();
+                
+                rotate([0,0,-15])
+                translate([0,137.5,15])
+                rotate([0,180,0])
+                microswitch();
             }
             
             rotate([0,0,-45])
