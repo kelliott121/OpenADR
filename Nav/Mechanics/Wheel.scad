@@ -42,7 +42,7 @@ module hub(diameter=40, width=10, thickness=2.5)
             cylinder(d=thickness*4, h=width*1.5, center=true);
         }
         
-        scale([1.025,1.025,1])
+        scale([1.05,1.05,1])
         shaft();
         
     }
