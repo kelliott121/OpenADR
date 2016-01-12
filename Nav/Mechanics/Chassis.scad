@@ -104,6 +104,7 @@ module right_plate(mounted=false, front=false, back=false)
 
 module front_plate(mounted=false, left=false, right=false)
 {
+    caster_offset = 117;
     difference()
     {
         union()
@@ -114,12 +115,10 @@ module front_plate(mounted=false, left=false, right=false)
                 
                 union()
                 {
-                    rotate([0,0,-15])
-                    translate([0,140,0])
+                    translate([-50,caster_offset,thickness + 1.5])
                     caster_mask();
                     
-                    rotate([0,0,15])
-                    translate([0,140,0])
+                    translate([50,caster_offset,thickness + 1.5])
                     caster_mask();
                 }
             }
@@ -140,10 +139,6 @@ module front_plate(mounted=false, left=false, right=false)
                 connection_mount();
                 
                 rotate([0,0,-90])
-                translate([-115,0,0])
-                connection_mount();
-                
-                rotate([0,0,-90])
                 translate([-90,0,0])
                 connection_mount();
                 
@@ -157,21 +152,11 @@ module front_plate(mounted=false, left=false, right=false)
             }
             
             // Casters
-            if (mounted)
-            {
-                rotate([0,0,-15])
-                translate([0,140,.4*25.4 - 3.5])
-                caster();
-                
-                rotate([0,0,15])
-                translate([0,140,.4*25.4 - 3.5])
-                caster();
-                
-                rotate([0,0,-15])
-                translate([0,137.5,15])
-                rotate([0,180,0])
-                microswitch();
-            }
+            translate([-50,caster_offset,thickness + 1.5])
+            caster_assembly(mounted);
+            
+            translate([50,caster_offset,thickness + 1.5])
+            caster_assembly(mounted);
             
             rotate([0,0,-45])
             translate([-130, 0, 22.5 + thickness])
@@ -247,6 +232,16 @@ module sonar_assembly(mounted=false)
     }
 }
 
+module caster_assembly(mounted=false)
+{
+    if (mounted)
+    {
+        caster();
+    }
+    
+    caster_mount();
+}
+
 module connection_mount()
 {
     translate([0,0,3.5+thickness])
@@ -287,9 +282,6 @@ module back_mask()
         rotate([0,0, -135])
         translate([0,0,-thickness*100])
         cube([diameter*10, diameter*10, thickness*200]);
-
-        //translate([0,-(diameter*5 + 60), 0])
-        //cube([diameter*10, diameter*10, thickness*200], center=true);
     }
 }
 

@@ -1,49 +1,87 @@
 $fn = 72;
 
 caster();
+caster_mount();
+//caster_wheel();
+//caster_axle();
 
 module caster()
 {
-    ball();
-    holder();
+    rotate([0,90,0])
+    union()
+    {
+        caster_wheel();
+        caster_axle();
+    }
 }
 
-module ball()
+module caster_wheel()
 {
-    diameter = (3/8) * 25.4;
-    offset = diameter/2 + ((.4*25.4) - diameter);
-    
-    translate([0,0,-offset])
-    sphere(d=diameter);
+    union()
+    {
+        difference()
+        {
+            rotate_extrude(angle=180)
+            difference()
+            {
+                translate([-17.5, 0, 0])
+                circle(r=25);
+                
+                translate([-50,-25,0])
+                square([50,50]);
+            }
+            
+            union()
+            {
+                translate([0,0,-(50 + 12.5)])
+                cube([100, 100, 100], center=true);
+                
+                translate([0,0,(50 + 12.5)])
+                cube([100, 100, 100], center=true);
+                
+                cylinder(r=3, h=100, center=true);
+            }
+        }
+    }
 }
 
-module holder()
+module caster_mount()
 {
-    length = .75 * 25.4;
-    width = (3/8) * 25.4;
-    scale_factor = (.75/(3/8));
-    hole_offset = (.53 * 25.4)/2;
-    hole_diameter = .09*25.4;
-    
     difference()
     {
-        scale([scale_factor,1,1])
-        translate([0,0,-2.5])
-        cylinder(d=width, h=2.5);
-        
-        for (y_offset = [-hole_offset, hole_offset])
+        union()
         {
-            translate([y_offset,0,0])
-            cylinder(d=hole_diameter, h=10, center=true);
+            translate([-(35/2 - 1.25),0,0])
+            cube([2.5, 10, 8], center=true);
+            
+            translate([(35/2 - 1.25),0,0])
+            cube([2.5, 10, 8], center=true);
         }
+        
+        rotate([0,90,0])
+        cylinder(d=5.25,h=35, center=true);
     }
 }
 
 module caster_mask()
 {
-    length = (3/8) * 25.4;
-    width = (3/8) * 25.4;
+    cube([27.5,17.5,50], center=true);
     
-    scale([1.1, 1.1, 1])
-    cube([length, width, 100], center=true);
+    rotate([0,90,0])
+    cylinder(d=5.25,h=35, center=true);
+}
+
+module caster_axle()
+{
+    cylinder(r=2.5, h=35, center=true);
+}
+
+module tube(d, h, t, center=false)
+{
+    difference()
+    {
+        cylinder(d=d, h=h, center=center);
+        
+        cylinder(d=(d-t), h=h, center=center);
+    }
 }
