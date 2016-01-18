@@ -7,7 +7,7 @@ module hc_sr04(view=false)
 {
     pcb_width = 45;
     pcb_height = 20.5;
-    pcb_depth = 2.5;
+    pcb_depth = 2.25;
     
     sensor_diameter = 16;
     sensor_depth = 12.5;
@@ -81,7 +81,7 @@ module hc_sr04_mount(thickness = 8)
 {
     pcb_width = 45;
     pcb_height = 20.5;
-    pcb_depth = 2.5;
+    pcb_depth = 2.25;
     
     sensor_diameter = 10;
     sensor_depth = 12.5;
