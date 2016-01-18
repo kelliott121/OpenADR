@@ -47,19 +47,20 @@ module caster_wheel()
 
 module caster_mount()
 {
+    translate([0,0,1])
     difference()
     {
         union()
         {
-            translate([-(35/2 - 1.25),0,0])
-            cube([2.5, 10, 8], center=true);
+            translate([-(36/2 - 1.25),0,0])
+            cube([2.5, 12.5, 10], center=true);
             
-            translate([(35/2 - 1.25),0,0])
-            cube([2.5, 10, 8], center=true);
+            translate([(36/2 - 1.25),0,0])
+            cube([2.5, 12.5, 10], center=true);
         }
         
         rotate([0,90,0])
-        cylinder(d=5.25,h=35, center=true);
+        cylinder(d=5.5,h=100, center=true);
     }
 }
 
@@ -68,7 +69,7 @@ module caster_mask()
     cube([27.5,17.5,50], center=true);
     
     rotate([0,90,0])
-    cylinder(d=5.25,h=35, center=true);
+    cylinder(d=5.5,h=37.5, center=true);
 }
 
 module caster_axle()
