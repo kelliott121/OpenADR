@@ -5,6 +5,7 @@ use <Battery.scad>;
 use <HC_SR04.scad>;
 use <Caster.scad>;
 use <Microswitch.scad>;
+use <Color_Sensor.scad>;
 
 $fn=72;
 
@@ -120,6 +121,9 @@ module front_plate(mounted=false, left=false, right=false)
                     
                     translate([50,caster_offset,thickness + 1.5])
                     caster_mask();
+                    
+                    translate([0,110,0])
+                    color_sensor_mask();
                 }
             }
 
@@ -158,14 +162,22 @@ module front_plate(mounted=false, left=false, right=false)
             translate([50,caster_offset,thickness + 1.5])
             caster_assembly(mounted);
             
+            // Color Sensor
+            translate([0,110,15])
+            color_sensor_assembly(mounted);
+            
+            // Sonar
+            // Left
             rotate([0,0,-45])
             translate([-130, 0, 22.5 + thickness])
             sonar_assembly(mounted=mounted);
             
+            // Right
             rotate([0,0,-135])
             translate([-130, 0, 22.5 + thickness])
             sonar_assembly(mounted=mounted);
             
+            // Center
             rotate([0,0,-90])
             translate([-130, 0, 22.5 + thickness])
             sonar_assembly(mounted=mounted);
@@ -240,6 +252,18 @@ module caster_assembly(mounted=false)
     }
     
     caster_mount();
+}
+
+module color_sensor_assembly(mounted=false)
+{
+    if (mounted)
+    {
+        rotate([180,0,0])
+        color_sensor(view=mounted);
+    }
+    
+    rotate([180,0,0])
+    color_sensor_mount();
 }
 
 module connection_mount()
