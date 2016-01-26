@@ -106,6 +106,7 @@ module right_plate(mounted=false, front=false, back=false)
 module front_plate(mounted=false, left=false, right=false)
 {
     caster_offset = 117;
+    color_sensor_offset = 113.5;
     difference()
     {
         union()
@@ -122,7 +123,7 @@ module front_plate(mounted=false, left=false, right=false)
                     translate([50,caster_offset,thickness + 1.5])
                     caster_mask();
                     
-                    translate([0,110,0])
+                    translate([0,color_sensor_offset,0])
                     color_sensor_mask();
                 }
             }
@@ -163,7 +164,7 @@ module front_plate(mounted=false, left=false, right=false)
             caster_assembly(mounted);
             
             // Color Sensor
-            translate([0,110,15])
+            translate([0,color_sensor_offset,15])
             color_sensor_assembly(mounted);
             
             // Sonar
