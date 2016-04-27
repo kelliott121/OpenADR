@@ -4,8 +4,8 @@ use <Pin_Header.scad>;
 
 $fn = 72;
 
-//encoder();
-//hall_sensors();
+encoder();
+hall_sensors();
 hall_sensors_mount();
 
 module encoder(encoder_diameter=20, magnet_diameter=6.4, magnet_height=3.1)
@@ -108,8 +108,8 @@ module hall_sensors_mount(diameter=30, thickness=5)
             {
                 cylinder(d=diameter, h=thickness, center=true);
                 
-                translate([diameter/2,0,0])
-                cube([8 + 4.39340, diameter*(sqrt(2)/2), thickness], center=true);
+                translate([diameter/2 - 1.25,0,0])
+                cube([2 + 4.39340, diameter*(sqrt(2)/2), thickness], center=true);
             }
             
             

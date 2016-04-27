@@ -51,7 +51,7 @@ module hub(diameter=40, width=10, thickness=2.5)
 module tire(diameter=50, width=10, thickness=5)
 {
     tread_angle = 10;
-    tread_fraction = .25;
+    tread_fraction = .1;
     
     color("white")
     union()

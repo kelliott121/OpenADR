@@ -1,8 +1,10 @@
-battery();
+$fn = 72;
 
-module battery(width=138.5, height=47.5, depth=24.5)
+Adafruit_1781();
+
+// Lithium Ion Cylindrical Battery - 3.7v 2200mAh
+module Adafruit_1781()
 {
-    color("black")
-    translate([0,0,height/2])
-    cube([width, depth, height], center=true);
+    color("blue")
+    cylinder(h=69, d=18);
 }

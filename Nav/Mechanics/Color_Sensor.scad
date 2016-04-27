@@ -2,14 +2,14 @@ $fn = 72;
 
 color_sensor(view=true);
 color_sensor_mount();
-color_sensor_mask();
+//color_sensor_mask();
 
 module color_sensor(view=false)
 {
     // Main PCB
     color("blue")
     translate([0,0,1.25])
-    cube([30, 21, 2], center=true);
+    cube([30.5, 21.5, 2.5], center=true);
     
     // LEDs
     color("white")
@@ -39,7 +39,7 @@ module color_sensor_mount()
     {
         cube([35, 25, 2.5], center=true);
         
-        cube([30.5, 21.5, 100], center=true);
+        cube([31, 22, 100], center=true);
     }
     
     translate([0,0,2.5 + height/2])
@@ -47,11 +47,11 @@ module color_sensor_mount()
     {
         cube([35, 25, height], center=true);
         
-        cube([25, 21.5, 100], center=true);
+        cube([25, 22, 100], center=true);
     }
 }
 
 module color_sensor_mask()
 {
-    cube([25, 25, 100], center=true);
+    cube([25, 22, 100], center=true);
 }
