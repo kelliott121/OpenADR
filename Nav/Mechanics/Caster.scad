@@ -1,8 +1,9 @@
 $fn = 72;
 
-caster();
-//caster_mount();
-//caster_wheel();
+//caster();
+caster_mount();
+//rotate([0,90,0])
+caster_wheel();
 //caster_axle();
 //caster_mask();
 
@@ -41,7 +42,7 @@ module caster_wheel()
                 translate([0,0,(50 + 12.5)])
                 cube([100, 100, 100], center=true);
                 
-                cylinder(d=2.2, h=100, center=true);
+                cylinder(d=2.5, h=100, center=true);
             }
         }
     }
@@ -53,15 +54,15 @@ module caster_mount()
     {
         union()
         {
-            translate([-(32.5/2 - 1.25),0,0])
+            translate([-(32.5/2 - 1.25), 0, 0])
             cube([2.5, 6, 6], center=true);
             
-            translate([(32.5/2 - 1.25),0,0])
+            translate([(32.5/2 - 1.25), 0, 0])
             cube([2.5, 6, 6], center=true);
         }
         
-        rotate([0,90,0])
-        cylinder(d=2.1,h=32.5, center=true);
+        rotate([0, 90, 0])
+        cylinder(d=2.5, h=32.5, center=true);
     }
 }
 
