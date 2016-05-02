@@ -14,11 +14,16 @@ side_wall=true;
 
 diameter = 300;
 height = 75;
-thickness = 2.5;
+thickness = 2;
 
 left_plate(mounted=mount_all);
+left_side_wall();
+
 right_plate(mounted=mount_all);
+right_side_wall();
+
 front_plate(mounted=mount_all);
+front_side_wall();
 
 module base_plate()
 {
@@ -30,6 +35,7 @@ module base_plate()
         cube([sideLength, sideLength, height*2], center=true);
     }
 }
+
 
 module side_wall()
 {
@@ -58,6 +64,7 @@ module side_wall()
     cube([backwall_width, thickness*2, wall_height], center=true);
 }
 
+
 module left_plate(mounted=false, front=false, back=false)
 {
     difference()
@@ -66,17 +73,13 @@ module left_plate(mounted=false, front=false, back=false)
         {
             difference()
             {
-                union()
-                {
-                    base_plate();
-                    if (side_wall)
-                    {
-                        side_wall();
-                    }
-                }
+                base_plate();
             
+                // Component masks
                 union()
                 {
+                    left_side_wall_mask(front=front, back=back);
+                    
                     translate([-(100 + 30),0,12.5])
                     wheel_well();
                     
@@ -97,20 +100,26 @@ module left_plate(mounted=false, front=false, back=false)
             // Inter-plate connectors
             union()
             {
-                rotate([0,0,-45])
-                translate([-111.5,0,0])
+                // Left to front connectors
+                // Inner
+                rotate([0, 0, -45])
+                translate([-113, 0, 0])
                 connection_mount();
                 
-                rotate([0,0,-45])
-                translate([-143.5,0,0])
+                // Outer
+                rotate([0, 0, -45])
+                translate([-143.5, 0, 0])
                 connection_mount();
                 
+                // Inter-Left connectors
+                // Outer
+                rotate([0, 0, 0])
+                translate([-143.5, 0, 0])
+                connection_mount();
+                
+                // Inner
                 rotate([0,0,0])
-                translate([-143.5,0,0])
-                connection_mount();
-                
-                rotate([0,0,0])
-                translate([-81.5,0,0])
+                translate([-81.5, 0, 0])
                 connection_mount();
             }
     
@@ -181,17 +190,12 @@ module front_plate(mounted=false, left=false, right=false)
         {
             difference()
             {
-                union()
-                {
-                    base_plate();
-                    if (side_wall)
-                    {
-                        side_wall();
-                    }
-                }
+                base_plate();
                 
                 union()
                 {
+                    front_side_wall_mask(left=left, right=right);
+                    
                     translate([-caster_offset_x, caster_offset_y, caster_offset_z])
                     caster_mask();
                     
@@ -222,26 +226,35 @@ module front_plate(mounted=false, left=false, right=false)
             // Inter-plate connectors
             union()
             {
+                // Front to left connectors
+                // Inner
                 rotate([0,0,-45])
-                translate([-111.5,0,0])
+                translate([-113,0,0])
                 connection_mount();
                 
+                // Outer
                 rotate([0,0,-45])
                 translate([-143.5,0,0])
                 connection_mount();
                 
+                // Inter-Front connectors
+                // Outer
                 rotate([0,0,-90])
                 translate([-143.5,0,0])
                 connection_mount();
                 
+                // Inner
                 rotate([0,0,-90])
                 translate([-91.5,0,0])
                 connection_mount();
                 
+                // Front to right connectors
+                // Inner
                 rotate([0,0,-135])
-                translate([-111.5,0,0])
+                translate([-113,0,0])
                 connection_mount();
                 
+                // Outer
                 rotate([0,0,-135])
                 translate([-143.5,0,0])
                 connection_mount();
@@ -295,6 +308,299 @@ module front_plate(mounted=false, left=false, right=false)
         }
     }
 }
+
+module left_side_wall(front=false, back=false)
+{
+    difference()
+    {
+        union()
+        {
+            difference()
+            {
+                side_wall();
+            
+                union()
+                {                    
+                    // Sonar masks
+                    // Left
+                    rotate([0,0,-45])
+                    translate([-136, 0, 22.5 + thickness + 12.5])
+                    hc_sr04_mask();
+                    
+                    // Far Left
+                    translate([0,20,0])
+                    rotate([0,0,0])
+                    translate([-120, 30, 22.5 + thickness + 12.5])
+                    hc_sr04_mask();
+                }
+            }
+
+            // Inter-plate connectors
+            union()
+            {
+                // Outer
+                rotate([0, 0, 40])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, 15])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, -15])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, -40])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                // Inner
+                translate([-80.5, -70, 0])
+                connection_mount_vertical();
+                
+                translate([-80.5, -25, 0])
+                connection_mount_vertical();
+                
+                translate([-80.5, 25, 0])
+                connection_mount_vertical();
+                
+                translate([-80.5, 70, 0])
+                connection_mount_vertical();
+            }
+        }
+        
+        // Mask out values
+        union()
+        {
+            front_mask();
+            
+            right_mask();
+            
+            back_mask();
+            
+            if (front)
+            {
+                quadrant_III_mask();
+            }
+            
+            if (back)
+            {
+                quadrant_II_mask();
+            }
+        }
+    }
+}
+
+
+module right_side_wall(front=false, back=false)
+{
+    // Right now we're just mirroring the left place because
+    // they're symmetric
+    scale([-1,1,1])
+    left_side_wall(front=front, back=back);
+}
+
+
+module front_side_wall(left=false, right=false)
+{
+    difference()
+    {
+        union()
+        {
+            difference()
+            {
+                side_wall();
+                
+                union()
+                {                    
+                    // Sonar masks
+                    // Left
+                    rotate([0,0,-45])
+                    translate([-136, 0, 22.5 + thickness + 12.5])
+                    hc_sr04_mask();
+                    
+                    // Right
+                    rotate([0,0,-135])
+                    translate([-136, 0, 22.5 + thickness + 12.5])
+                    hc_sr04_mask();
+                    
+                    // Center
+                    rotate([0,0,-90])
+                    translate([-136, 0, 22.5 + thickness + 12.5])
+                    hc_sr04_mask();
+                }
+            }
+
+            // Inter-plate connectors
+            union()
+            {
+                // Outer
+                rotate([0, 0, -50])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, -75])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, -105])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                rotate([0, 0, -130])
+                translate([-144.5, 0, 0])
+                connection_mount_vertical();
+                
+                // Inner
+                translate([-70, 80.5, 0])
+                connection_mount_vertical();
+                
+                translate([-25, 80.5, 0])
+                connection_mount_vertical();
+                
+                translate([25, 80.5, 0])
+                connection_mount_vertical();
+                
+                translate([70, 80.5, 0])
+                connection_mount_vertical();
+            }
+        }
+        
+        union()
+        {
+            left_mask();
+            
+            right_mask();
+            
+            back_mask();
+            
+            if (left)
+            {
+                quadrant_I_mask();
+            }
+            
+            if (right)
+            {
+                quadrant_II_mask();
+            }
+        }
+    }
+}
+
+
+module left_side_wall_mask(front=false, back=false)
+{
+    color("blue")
+    
+    difference()
+    {
+        union()
+        {
+            // Outer
+            rotate([0, 0, 40])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, 15])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, -15])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, -40])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            // Inner
+            translate([-80.5, -70, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([-80.5, -25, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([-80.5, 25, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([-80.5, 70, 0])
+            cylinder(d=3.5, h=20, center=true);
+        }
+        
+        if (front)
+        {
+            quadrant_III_mask();
+        }
+        
+        if (back)
+        {
+            quadrant_II_mask();
+        }
+    }
+}
+
+
+module right_side_wall_mask(front=false, back=false)
+{
+    // Right now we're just mirroring the left place because
+    // they're symmetric
+    scale([-1,1,1])
+    left_side_wall_mask(front=front, back=back);
+}
+
+
+module front_side_wall_mask(front=false, back=false)
+{
+    color("blue")
+    
+    difference()
+    {
+        union()
+        {
+            // Outer
+            rotate([0, 0, -50])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, -75])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, -105])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            rotate([0, 0, -130])
+            translate([-144.5, 0, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            // Inner
+            translate([-70, 80.5, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([-25, 80.5, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([25, 80.5, 0])
+            cylinder(d=3.5, h=20, center=true);
+            
+            translate([70, 80.5, 0])
+            cylinder(d=3.5, h=20, center=true);
+        }
+            
+        if (left)
+        {
+            quadrant_I_mask();
+        }
+        
+        if (right)
+        {
+            quadrant_II_mask();
+        }
+    }
+}
+
 
 module motor_assembly(mounted=false, left=false, right=false)
 {
@@ -369,6 +675,20 @@ module connection_mount()
         cylinder(d=3.5, h=20, center=true);
     }
 }
+
+
+module connection_mount_vertical()
+{
+    translate([0,0,1.5+thickness])
+    difference()
+    {
+        cube([7, 7, 3], center=true);
+        
+        //rotate([90,0,0])
+        cylinder(d=3.5, h=20, center=true);
+    }
+}
+
 
 module front_mask()
 {
