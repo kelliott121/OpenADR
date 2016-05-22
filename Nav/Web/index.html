@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Expires" CONTENT="0">
+<meta http-equiv="Cache-Control" CONTENT="max-age=1, must-revalidate
+<meta http-equiv="Pragma" CONTENT="no-cache">
+<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+
+<style>
+    body{ background-color: white; }
+    canvas{border:1px solid black;}
+</style>
+
+<script>
+    $(function()
+	{
+		var myTimer = setInterval(loop, 1000); 
+
+         // Update the image
+        function loop()
+		{
+			$("#display").attr("src", "/points.png?" + new Date().getTime());
+        }      
+
+    });
+</script>
+
+</head>
+
+<body>
+	<img id="display" src="points.png" style="width:830px;height:830px;">
+</body>
+</html>
