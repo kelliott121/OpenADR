@@ -52,6 +52,10 @@ void loop()
 
     // Reverse slightly
     motors.backward(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(-FULL_SPEED);
+    Serial.print(",");
+    Serial.println(-FULL_SPEED);
     delay(100);
 
     // Turn left until the wall is on the right
@@ -60,6 +64,10 @@ void loop()
       updateSensors();
       minDir = getClosestWall();
       motors.turnLeft(FULL_SPEED);
+      Serial.print("velocity=");
+      Serial.print(-FULL_SPEED);
+      Serial.print(",");
+      Serial.println(FULL_SPEED);
       delay(100);
     }
     while ((Distances[DEG_90] < 10) && (minDir != DEG_0));
@@ -71,6 +79,10 @@ void loop()
 
     // Turn left to straighten out
     motors.turnLeft(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(-FULL_SPEED);
+    Serial.print(",");
+    Serial.println(FULL_SPEED);
     delay(100);
   }
   // If the robot is too close to the wall and isn't getting farther
@@ -79,9 +91,17 @@ void loop()
     Serial.println("Case 3");
 
     motors.turnLeft(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(-FULL_SPEED);
+    Serial.print(",");
+    Serial.println(FULL_SPEED);
     delay(100);
 
     motors.forward(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(FULL_SPEED);
+    Serial.print(",");
+    Serial.println(FULL_SPEED);
     delay(100);
   }
   // If the robot is too far from the wall and isn't getting closer
@@ -90,15 +110,27 @@ void loop()
     Serial.println("Case 4");
 
     motors.turnRight(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(FULL_SPEED);
+    Serial.print(",");
+    Serial.println(-FULL_SPEED);
     delay(100);
 
     motors.forward(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(FULL_SPEED);
+    Serial.print(",");
+    Serial.println(FULL_SPEED);
     delay(100);
   }
   // Otherwise keep going straight
   else
   {
     motors.forward(FULL_SPEED);
+    Serial.print("velocity=");
+    Serial.print(FULL_SPEED);
+    Serial.print(",");
+    Serial.println(FULL_SPEED);
     delay(100);
   }
 }
@@ -112,8 +144,9 @@ void updateSensors()
     Distances_Previous[i] = Distances[i];
     Distances[i] = DistanceSensors[i]->getDistance(CM, 5);
 
+    Serial.print("point=");
     Serial.print(AngleMap[i]);
-    Serial.print(":");
+    Serial.print(",");
     Serial.println(Distances[i]);
 
     delay(1);

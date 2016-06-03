@@ -1,33 +1,62 @@
 <!doctype html>
 <html>
 <head>
-<meta http-equiv="Expires" CONTENT="0">
-<meta http-equiv="Cache-Control" CONTENT="max-age=1, must-revalidate
-<meta http-equiv="Pragma" CONTENT="no-cache">
 <script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
 
 <style>
-    body{ background-color: white; }
-    canvas{border:1px solid black;}
+	body{ background-color: white; }
+	canvas{border:1px solid black;}
 </style>
 
 <script>
-    $(function()
+	$(function()
 	{
 		var myTimer = setInterval(loop, 1000); 
 
-         // Update the image
-        function loop()
+		// Update the image
+		function loop()
 		{
 			$("#display").attr("src", "/points.png?" + new Date().getTime());
-        }      
+		}
+	});
 
-    });
+	function changeNavigationType()
+	{
+		var navSelect = document.getElementById("Navigation Type");
+
+		console.log(navSelect.value);
+
+		var http = new XMLHttpRequest();
+		var url = "http://ee-kelliott:8000/";
+		var params = "navType=" + navSelect.value;
+
+		http.open("GET", url, true);
+
+		http.onreadystatechange = function()
+		{
+			//Call a function when the state changes.
+			if(http.readyState == 4 && http.status == 200)
+			{
+				alert(http.responseText);
+			}
+		}
+
+		http.send(params);
+	}
 </script>
 
 </head>
 
 <body>
-	<img id="display" src="points.png" style="width:830px;height:830px;">
+	<div>
+		<img id="display" src="points.png" style="width:830px;height:450px;">
+	</div>
+
+	<select id="Navigation Type" onchange="changeNavigationType()">
+		<option value="None">None</option>
+		<option value="Random">Random</option>
+		<option value="Grid">Grid</option>
+		<option value="Manual">Manual</option>
+	</select>
 </body>
 </html>
