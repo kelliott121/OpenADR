@@ -11,12 +11,197 @@
 <script>
 	$(function()
 	{
-		var myTimer = setInterval(loop, 1000); 
+		var myTimer = setInterval(loop, 1000);
+		var xhr = new XMLHttpRequest();
+
+		var c = document.getElementById("displayCanvas");
+		var ctx = c.getContext("2d");
+
+		// The graphical center of the robot in the image
+		var centerPoint = [415, 415];
+
+		// Width of the robot in cm/px
+		var robotWidth = 30;
+
+		// Radius of the wheels on the robot
+		wheelRadius = 12.8;
+
+		// Minimum sensing distance
+		var minSenseDistance = 2;
+
+		// Maximum sensing distance
+		var maxSenseDistance = 400;
+
+		// The distance from the robot to display the turn vector at
+		var turnVectorDistance = 5
 
 		// Update the image
 		function loop()
 		{
 			$("#display").attr("src", "/points.png?" + new Date().getTime());
+
+			ctx.clearRect(0, 0, c.width, c.height);
+
+			// Set global stroke properties
+			ctx.lineWidth = 1;
+
+			// Draw the robot
+			ctx.strokeStyle="#000000";
+			ctx.beginPath();
+			ctx.arc(centerPoint[0], centerPoint[1], (robotWidth / 2), 0, 2*Math.PI);
+			ctx.stroke();
+
+			// Draw the robot's minimum sensing distance as a circle
+			ctx.strokeStyle="#00FF00";
+			ctx.beginPath();
+			ctx.arc(centerPoint[0], centerPoint[1], ((robotWidth / 2) + minSenseDistance), 0, 2*Math.PI);
+			ctx.stroke();
+
+			// Draw the robot's maximum sensing distance as a circle
+			ctx.strokeStyle="#FFA500";
+			ctx.beginPath();
+			ctx.arc(centerPoint[0], centerPoint[1], ((robotWidth / 2) + maxSenseDistance), 0, 2*Math.PI);
+			ctx.stroke();
+
+			xhr.onreadystatechange = processJSON;
+			xhr.open("GET", "http://localhost/data.json?" + new Date().getTime(), true);
+			xhr.send();
+			//var robotData = JSON.parse(text);
+		}
+
+		function processJSON()
+		{
+			if (xhr.readyState == 4)
+			{
+				var robotData = JSON.parse(xhr.responseText);
+
+				drawVectors(robotData);
+				drawPoints(robotData);
+			}
+		}
+
+		// Calculate the turn radius of the robot from the two velocities
+		function calculateTurnRadius(leftVector, rightVector)
+		{
+			var slope = ((rightVector - leftVector) / 10.0) / (2.0 * wheelRadius);
+			var yOffset = ((Math.max(leftVector, rightVector) + Math.min(leftVector, rightVector)) / 10.0) / 2.0;
+			var xOffset = 0;
+			if (slope != 0)
+			{
+				xOffset = Math.round((-yOffset) / slope);
+			}
+
+			return Math.abs(xOffset);
+		}
+
+		// Calculate the angle required to display a turn vector with
+		// a length that matched the magnitude of the motion
+		function calculateTurnLength(turnRadius, vectorMagnitude)
+		{
+			var circumference = 2.0 * Math.PI * turnRadius;
+			return Math.abs((vectorMagnitude / circumference) * (2 * Math.PI));
+		}
+
+		function drawVectors(robotData)
+		{
+			leftVector = robotData.velocities[0];
+			rightVector = robotData.velocities[1];
+
+			// Calculate the magnitude of the velocity vector in pixels
+			// The 2.5 dividend was determined arbitrarily to provide an
+			// easy to read line
+			var vectorMagnitude = (((leftVector + rightVector) / 2.0) / 2.5);
+
+
+			ctx.strokeStyle="#FF00FF";
+			ctx.beginPath();
+			if (leftVector == rightVector)
+			{
+
+				var vectorEndY = centerPoint[1] - vectorMagnitude;
+				ctx.moveTo(centerPoint[0], centerPoint[1]);
+				ctx.lineTo(centerPoint[0], vectorEndY);
+			}
+			else
+			{
+				var turnRadius = calculateTurnRadius(leftVector, rightVector);
+
+				if (turnRadius == 0)
+				{
+					var outsideRadius = turnVectorDistance + (robotWidth / 2.0);
+					var rotationMagnitude = (((Math.abs(leftVector) + Math.abs(rightVector)) / 2.0) / 2.5);
+					var turnAngle = calculateTurnLength(outsideRadius, rotationMagnitude);
+
+					if (leftVector < rightVector)
+					{
+						ctx.arc(centerPoint[0], centerPoint[1], outsideRadius, (1.5 * Math.PI) - turnAngle, (1.5 * Math.PI));
+					}
+					if (leftVector > rightVector)
+					{
+						ctx.arc(centerPoint[0], centerPoint[1], outsideRadius, (1.5 * Math.PI), (1.5 * Math.PI) + turnAngle);
+					}
+				}
+				else
+				{
+					var turnAngle = 0;
+					if (vectorMagnitude != 0)
+					{
+						turnAngle = calculateTurnLength(turnRadius, vectorMagnitude);
+					}
+
+					// Turning forward and left
+					if ((leftVector < rightVector) && (leftVector + rightVector > 0))
+					{
+						turnVectorCenterX = centerPoint[0] - turnRadius;
+						turnVectorCenterY = centerPoint[1];
+						ctx.arc(turnVectorCenterX, turnVectorCenterY, turnRadius, -turnAngle, 0);
+					}
+					// Turning backwards and left
+					else if ((leftVector > rightVector) && (leftVector + rightVector < 0))
+					{
+						turnVectorCenterX = centerPoint[0] - turnRadius;
+						turnVectorCenterY = centerPoint[1];
+						ctx.arc(turnVectorCenterX, turnVectorCenterY, turnRadius, 0, turnAngle);
+					}
+					// Turning forwards and right
+					else if ((leftVector > rightVector) && (leftVector + rightVector > 0))
+					{
+						turnVectorCenterX = centerPoint[0] + turnRadius;
+						turnVectorCenterY = centerPoint[1];
+						ctx.arc(turnVectorCenterX, turnVectorCenterY, turnRadius, Math.PI, Math.PI + turnAngle);
+					}
+					// Turning backwards and right
+					else if ((leftVector < rightVector) && (leftVector + rightVector < 0))
+					{
+						turnVectorCenterX = centerPoint[0] + turnRadius;
+						turnVectorCenterY = centerPoint[1];
+						ctx.arc(turnVectorCenterX, turnVectorCenterY, turnRadius, Math.PI - turnAngle, Math.PI);
+					}
+				}
+			}
+
+			ctx.stroke();
+		}
+
+		function drawPoints(robotData)
+		{
+			for (var key in robotData.points)
+			{
+				var angle = Number(key);
+				var rDistance = robotData.points[angle];
+
+				var cosValue = Math.cos(angle * (Math.PI / 180.0));
+				var sinValue = Math.sin(angle * (Math.PI / 180.0));
+
+				var xOffset = ((robotWidth / 2) + rDistance) * cosValue;
+				var yOffset = ((robotWidth / 2) + rDistance) * sinValue;
+
+				var xDist = centerPoint[0] + Math.round(xOffset);
+				var yDist = centerPoint[1] - Math.round(yOffset);
+				
+				ctx.fillStyle = "#FF0000";
+				ctx.fillRect((xDist - 1), (yDist - 1), 2, 2);
+			}
 		}
 	});
 
@@ -50,6 +235,10 @@
 <body>
 	<div>
 		<img id="display" src="points.png" style="width:830px;height:450px;">
+	</div>
+
+	<div>
+		<canvas id="displayCanvas" width="830" height="450"></canvas>
 	</div>
 
 	<select id="Navigation Type" onchange="changeNavigationType()">

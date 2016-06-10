@@ -3,8 +3,12 @@ import math
 import time
 import random
 import serial
+import json
 
 # The scaling of the image is 1cm:1px
+
+# JSON file to output to
+jsonFile = "data.json"
 
 # The graphical center of the robot in the image
 centerPoint = (415, 415)
@@ -30,6 +34,9 @@ velocityVector = [0, 0]
 
 # Serial port to use
 serialPort = "COM15"
+
+robotData = {}
+
 
 # Three possible test print files to simulate the serial link
 # to the robot
@@ -79,6 +86,14 @@ while True:
 	line = ser.readline()
 
 	parseLine(line.strip())
+
+	robotData["points"] = points
+	robotData["velocities"] = velocityVector
+
+	print json.dumps(robotData)
+	jsonFilePointer = open(jsonFile, 'w')
+	jsonFilePointer.write(json.dumps(robotData))
+	jsonFilePointer.close()
 
 	print points
 
