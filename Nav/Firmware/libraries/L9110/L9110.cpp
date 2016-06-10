@@ -9,7 +9,7 @@ L9110::L9110(uint8_t A_IA, uint8_t A_IB, uint8_t B_IA, uint8_t B_IB)
 	_A_IB = A_IB;
 	_B_IA = B_IA;
 	_B_IB = B_IB;
-	
+
 	pinMode(_A_IA, OUTPUT);
 	pinMode(_A_IB, OUTPUT);
 	pinMode(_B_IA, OUTPUT);
@@ -55,19 +55,19 @@ void L9110::motorAForward(uint8_t speed)
 void L9110::motorABackward(uint8_t speed)
 {
 	digitalWrite(_A_IB, LOW);
-    analogWrite(_A_IA, speed);
+	analogWrite(_A_IA, speed);
 }
 
 
 void L9110::motorBForward(uint8_t speed)
 {
 	digitalWrite(_B_IA, LOW);
-    analogWrite(_B_IB, speed);	
+	analogWrite(_B_IB, speed);	
 }
 
 
 void L9110::motorBBackward(uint8_t speed)
 {
 	digitalWrite(_B_IB, LOW);
-    analogWrite(_B_IA, speed);	
+	analogWrite(_B_IA, speed);	
 }
