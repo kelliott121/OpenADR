@@ -11,17 +11,21 @@ class L9110
 	void backward(uint8_t speed);
 	void turnLeft(uint8_t speed);
 	void turnRight(uint8_t speed);
+	void setSpeed(int16_t speedLeft, int16_t speedRight);
 
   private:
-    uint8_t _A_IA;
-    uint8_t _A_IB;
-    uint8_t _B_IA;
-    uint8_t _B_IB;
+	int16_t _currentSpeedLeft;
+	int16_t _currentSpeedRight;
+	uint8_t _A_IA;
+	uint8_t _A_IB;
+	uint8_t _B_IA;
+	uint8_t _B_IB;
 	
 	void motorAForward(uint8_t speed);
 	void motorABackward(uint8_t speed);
 	void motorBForward(uint8_t speed);
 	void motorBBackward(uint8_t speed);
+	void updateSpeed(void);
 };
 
 #endif
