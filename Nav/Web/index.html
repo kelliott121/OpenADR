@@ -38,7 +38,7 @@
 		// Update the image
 		function loop()
 		{
-			$("#display").attr("src", "/points.png?" + new Date().getTime());
+			//$("#display").attr("src", "/points.png?" + new Date().getTime());
 
 			ctx.clearRect(0, 0, c.width, c.height);
 
@@ -64,7 +64,7 @@
 			ctx.stroke();
 
 			xhr.onreadystatechange = processJSON;
-			xhr.open("GET", "http://localhost/data.json?" + new Date().getTime(), true);
+			xhr.open("GET", "http://192.168.0.106/data.json?" + new Date().getTime(), true);
 			xhr.send();
 			//var robotData = JSON.parse(text);
 		}
@@ -233,10 +233,6 @@
 </head>
 
 <body>
-	<div>
-		<img id="display" src="points.png" style="width:830px;height:450px;">
-	</div>
-
 	<div>
 		<canvas id="displayCanvas" width="830" height="450"></canvas>
 	</div>
