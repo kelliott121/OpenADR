@@ -38,8 +38,6 @@
 		// Update the image
 		function loop()
 		{
-			//$("#display").attr("src", "/points.png?" + new Date().getTime());
-
 			ctx.clearRect(0, 0, c.width, c.height);
 
 			// Set global stroke properties
@@ -64,7 +62,7 @@
 			ctx.stroke();
 
 			xhr.onreadystatechange = processJSON;
-			xhr.open("GET", "http://192.168.0.106/data.json?" + new Date().getTime(), true);
+			xhr.open("GET", "data.json?" + new Date().getTime(), true);
 			xhr.send();
 			//var robotData = JSON.parse(text);
 		}
