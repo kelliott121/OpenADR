@@ -1,4 +1,4 @@
-$fn = 36;
+$fn = 72;
 
 motor();
 
@@ -68,60 +68,45 @@ module mounting_holes()
     }
 }
 
-module motor_mount(thickness=3)
+module motor_mount(thickness=3, supports=true)
 {
+    mount_height = 8;
+    
     translate([0,-7.5,0])
     
     union()
     {
+        // Mounting for the motor
         difference()
         {
-            translate([0,0,-6.125])
-            cube([thickness, 40, 37.5], center=true);
+            translate([0,0,1.25 - mount_height/2])
+            cube([thickness, 40, mount_height + 22.5 + 2.5], center=true);
             
             union()
             {
                 mounting_holes();
                 
+                // Mounting nub
+                translate([0, 18.5 - 11 - 11.5, 0])
+                rotate([0,90,0])
+                cylinder(d=5, h=37, center=true);
+                
+                // Motor Shaft
                 translate([0, 18.5 - 11,0])
                 rotate([0,90,0])
-                cylinder(d=7.5, h=37, center=true);
+                cylinder(d=10, h=37, center=true);
             }
         }
-    
-        /*
-        translate([0,0,-6.125 - 37.5/2])
-        difference()
-        {
-            rotate([0,45,0])
-            cube([thickness*2, 40, thickness*2], center=true);
-            
-            translate([0,0,-thickness*2])
-            cube([thickness*4, 40, thickness*4], center=true);
-        }
-        */
         
-        difference()
+        // Support for the motor
+        if (supports)
         {
             union()
             {
-                for (y_offset = [-15, 7.5])
+                for (y_offset = [-17, 0, 17])
                 {
-                    translate([-10.5,y_offset,-(22.5/2 + (37.5/2 - 6.125)/2) - .75])
-                    cube([18,4,37.5/2 - 6.125 + .5], center=true);
-                }
-            }
-            
-            for (x_offset = [-15.5, -5.5])
-            {
-                for (y_offset = [-15, -22])
-                {
-                    translate([x_offset,0,y_offset])
-                    union()
-                    {
-                        rotate([90,0,0])
-                        cylinder(d=3.5,h=40, center=true); 
-                    }
+                    translate([-9.5, y_offset, -(mount_height/2 + 22.5/2)])
+                    cube([16,3,mount_height], center=true);
                 }
             }
         }
