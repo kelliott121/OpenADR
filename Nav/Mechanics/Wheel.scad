@@ -1,12 +1,16 @@
 use <Motor.scad>;
+use <Gear.scad>;
 
 $fn=72;
 
-wheel();
-//tire();
+//wheel();
+//wheel_mount();
+//wheel_well();
 //hub();
+tire();
 
-module wheel(diameter=65, width=20)
+
+module wheel()
 {
     rotate([0,90,0])
     
@@ -17,41 +21,63 @@ module wheel(diameter=65, width=20)
     }
 }
 
-module wheel_well(height=50, width=20)
-{
-    cube([width, height, height], center=true);
-}
 
-
-module hub(diameter=40, width=10, thickness=2.5)
+module wheel_mount()
 {
-    color("black")
     difference()
     {
         union()
         {
-            tube(d=diameter, h=width, t=thickness, center=true);
+            translate([-7, 0, 0])
+            cube([2, 10, 10], center=true);
             
-            for (angle = [0:45:135])
-            {
-                rotate([0,0,angle])
-                cube([diameter-thickness, thickness, width], center=true);
-            }
-            
-            translate([0,0,width/4])
-            cylinder(d=thickness*4, h=width*1.5, center=true);
+            translate([14.5, 0, 0])
+            cube([2, 10, 8], center=true);
         }
         
-        scale([1.05,1.05,1])
-        shaft();
-        
+        rotate([0, 90, 0])
+        cylinder(d=2.5, h=100, center=true);
     }
 }
 
-module tire(diameter=50, width=10, thickness=5)
+
+module wheel_well()
 {
-    tread_angle = 10;
-    tread_fraction = .1;
+    rotate([0, 90, 0])
+    cylinder(d=42.5, h=12, center=true);
+    
+    translate([3.75 + 6, 0, 0])
+    rotate([0, 90, 0])
+    cylinder(d=26, h=7.5, center=true);
+}
+
+
+module hub(diameter=30, width=10, thickness=2.5)
+{
+    difference()
+    {
+        union()
+        {
+            color("black")
+            cylinder(d=diameter, h=width, center=true);
+            
+            translate([0, 0, (width / 2) + (width / 8)])
+            cylinder(d=23.5, h=(width / 4), center=true);
+            
+            color("grey")
+            translate([0, 0, (width / 2) + (width / 4) + (width / 4)])
+            scale([.5, .5, .5])
+            gear(num_teeth=16);
+        }
+        
+        cylinder(d=2.5, h=width*4, center=true);        
+    }
+}
+
+module tire(diameter=40, width=10, thickness=5)
+{
+    tread_angle = 15;
+    tread_fraction = .2;
     
     color("white")
     union()

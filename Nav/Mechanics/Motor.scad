@@ -70,7 +70,7 @@ module mounting_holes()
 
 module motor_mount(thickness=3)
 {
-    mount_height = 5;
+    mount_height = 8;
     
     translate([0,-7.5,0])
     
@@ -95,10 +95,10 @@ module motor_mount(thickness=3)
         // Support for the motor
         union()
         {
-            for (y_offset = [-15, 7.5])
+            for (y_offset = [-17, 0, 17])
             {
-                translate([-10.5, y_offset, -(mount_height/2 + 22.5/2)])
-                cube([18,4,mount_height], center=true);
+                translate([-9.5, y_offset, -(mount_height/2 + 22.5/2)])
+                cube([16,3,mount_height], center=true);
             }
         }
     }

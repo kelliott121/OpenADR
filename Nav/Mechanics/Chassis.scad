@@ -6,6 +6,8 @@ use <HC_SR04.scad>;
 use <Caster.scad>;
 use <Microswitch.scad>;
 use <Color_Sensor.scad>;
+use <Gear.scad>;
+use <Tracks.scad>;
 
 $fn = 72;
 
@@ -39,7 +41,7 @@ module base_plate()
 
 module side_wall()
 {
-    wall_height = (height - thickness*2)/2;
+    wall_height = (height - thickness*2);
     wall_offset = wall_height/2 + thickness;
     sideLength  = 150;
     backwall_offset = -sqrt(2 * pow(sideLength, 2))/2;
@@ -55,7 +57,7 @@ module side_wall()
     translate([0,0,wall_offset])
     difference()
     {
-        cube([sideLength + thickness*2, sideLength + thickness*2, wall_height], center=true);
+        cube([sideLength + thickness*4, sideLength + thickness*2, wall_height], center=true);
         cube([sideLength, sideLength, height*2], center=true);
     }
     
@@ -80,7 +82,7 @@ module left_plate(mounted=false, front=false, back=false)
                 {
                     left_side_wall_mask(front=front, back=back);
                     
-                    translate([-(100 + 30),0,12.5])
+                    translate([-(100 + 31.5), 0, thickness + 3])
                     wheel_well();
                     
                     // Sonar masks
@@ -119,11 +121,11 @@ module left_plate(mounted=false, front=false, back=false)
                 
                 // Inner
                 rotate([0,0,0])
-                translate([-81.5, 0, 0])
+                translate([-82.5, 0, 0])
                 connection_mount();
             }
     
-            translate([-100,0,15 + thickness])
+            translate([-100, 0, thickness + 3])
             motor_assembly(mounted=mounted);
             
             translate([0,20,0])
@@ -136,13 +138,20 @@ module left_plate(mounted=false, front=false, back=false)
             sonar_assembly(mounted=mounted);
             
             if (mounted)
-            {
-                translate([-88,65,thickness])
-                Adafruit_1781();
-                translate([-88,45,thickness])
-                Adafruit_1781();
-                translate([-88,25,thickness])
-                Adafruit_1781();
+            {                
+                //translate([-82, 40, 35 + thickness])
+                //Sparkfun_PRT_13856();
+                //translate([-90, 40, 35 + thickness])
+                //Sparkfun_PRT_13856();
+                //translate([-98, 40, 35 + thickness])
+                //Sparkfun_PRT_13856();
+                
+                translate([-88, 52.5, (19 / 2) + thickness + 15])
+                rotate([0, 0, 90])
+                Holder_18650();
+                translate([-88, 52.5, (19 / 2) + thickness + 35])
+                rotate([0, 0, 90])
+                Holder_18650();
             }
         }
         
@@ -180,7 +189,7 @@ module front_plate(mounted=false, left=false, right=false)
 {
     caster_offset_x = 40;
     caster_offset_y = 115;
-    caster_offset_z = thickness + 1;
+    caster_offset_z = -8.5;
     
     color_sensor_offset_y = 120;
     
@@ -286,6 +295,19 @@ module front_plate(mounted=false, left=false, right=false)
             rotate([0,0,-90])
             translate([-136, 0, 22.5 + thickness])
             sonar_assembly(mounted=mounted);
+            
+            if (mounted)
+            {
+                for (xOffset = [60, 32, -30, -60])
+                {
+                    for (yOffset = [90, 118])
+                    {
+                        translate([xOffset, yOffset, thickness + 2])
+                        rotate([0, 0, 0])
+                        LFP_26650_3300();
+                    }
+                }
+            }
         }
         
         union()
@@ -309,8 +331,10 @@ module front_plate(mounted=false, left=false, right=false)
     }
 }
 
-module left_side_wall(front=false, back=false)
+module left_side_wall(mounted=false, front=false, back=false)
 {
+    sideLength = 150;
+    
     difference()
     {
         union()
@@ -356,17 +380,38 @@ module left_side_wall(front=false, back=false)
                 connection_mount_vertical();
                 
                 // Inner
-                translate([-80.5, -70, 0])
+                translate([-82.5, -70, 0])
                 connection_mount_vertical();
                 
-                translate([-80.5, -25, 0])
+                translate([-82.5, -25, 0])
                 connection_mount_vertical();
                 
-                translate([-80.5, 25, 0])
+                translate([-82.5, 25, 0])
                 connection_mount_vertical();
                 
-                translate([-80.5, 70, 0])
+                translate([-82.5, 70, 0])
                 connection_mount_vertical();
+            }
+            
+            // Module track
+            /*trackSize = 3.5;
+            
+            for (zOffset = [height / 4, 2 * height / 4, 3 * height / 4])
+            {
+                translate([-sideLength/2, 0, zOffset])
+                difference()
+                {
+                    rotate([0, 45, 0])
+                    cube([trackSize, sideLength, trackSize], center=true);
+                    
+                    translate([-trackSize / 2, 0, 0])
+                    cube([trackSize, sideLength, trackSize], center=true);
+                }
+            }
+            */
+            if (mounted)
+            {
+                tracks();
             }
         }
         
@@ -388,12 +433,14 @@ module left_side_wall(front=false, back=false)
             {
                 quadrant_II_mask();
             }
+            
+            track_mask();
         }
     }
 }
 
 
-module right_side_wall(front=false, back=false)
+module right_side_wall(mounted=false, front=false, back=false)
 {
     // Right now we're just mirroring the left place because
     // they're symmetric
@@ -402,7 +449,7 @@ module right_side_wall(front=false, back=false)
 }
 
 
-module front_side_wall(left=false, right=false)
+module front_side_wall(mounted=false, left=false, right=false)
 {
     difference()
     {
@@ -515,16 +562,16 @@ module left_side_wall_mask(front=false, back=false)
             cylinder(d=3.5, h=20, center=true);
             
             // Inner
-            translate([-80.5, -70, 0])
+            translate([-82.5, -70, 0])
             cylinder(d=3.5, h=20, center=true);
             
-            translate([-80.5, -25, 0])
+            translate([-82.5, -25, 0])
             cylinder(d=3.5, h=20, center=true);
             
-            translate([-80.5, 25, 0])
+            translate([-82.5, 25, 0])
             cylinder(d=3.5, h=20, center=true);
             
-            translate([-80.5, 70, 0])
+            translate([-82.5, 70, 0])
             cylinder(d=3.5, h=20, center=true);
         }
         
@@ -606,24 +653,45 @@ module motor_assembly(mounted=false, left=false, right=false)
 {
     union()
     {
+        //motorOffset = sqrt(pow(15.5, 2) / 2);
+        motorOffset = 15.5;
+        
+        translate([6, 0, motorOffset])
         motor_mount();
         
-        translate([12.5, 0, -15])
-        hall_sensors_mount();
+        //translate([12.5, 0, -15])
+        //hall_sensors_mount();
+        
+        translate([-31.5,0,0])
+        wheel_mount();
         
         if (mounted)
         {
-            translate([-11.5,0,0])
+            translate([-5.5, 0, motorOffset])
             motor();
         
+            
             translate([-31.5,0,0])
             wheel();
             
-            translate([5.25,0,0])
-            encoder();
+            translate([-21.5, 0, motorOffset])
+            rotate([0, 90, 0])
+            difference()
+            {
+                rotate([0, 0, 22.5])
+                scale([-.5, .5, .5])
+                gear(num_teeth=8);
+                
+                scale([1.05, 1.05, 1]);
+                shaft();
+            }
             
-            translate([12.5,0,-15])
-            hall_sensors();
+            
+            //translate([14.25, 0, motorOffset])
+            //encoder();
+            
+            //translate([22.5, 0, 0])
+            //hall_sensors();
         }
     }
 }
@@ -635,7 +703,7 @@ module sonar_assembly(mounted=false)
     {
         if (mounted)
         {
-            hc_sr04(view=true);
+            hc_sr04(view=false);
         }
         
         hc_sr04_mount();
@@ -647,9 +715,9 @@ module caster_assembly(mounted=false)
     if (mounted)
     {
         caster();
-    }
     
-    caster_mount();
+        caster_mount();
+    }
 }
 
 module color_sensor_assembly(mounted=false)
@@ -693,22 +761,22 @@ module connection_mount_vertical()
 module front_mask()
 {
     rotate([0,0,45])
-    translate([0,0,-thickness*100])
-    cube([diameter*10, diameter*10, thickness*200]);
+    translate([0,0,-thickness])
+    cube([diameter*10, diameter*10, thickness*40]);
 }
 
 module left_mask()
 {
     rotate([0,0,135])
-    translate([0,0,-thickness*100])
-    cube([diameter*10, diameter*10, thickness*200]);
+    translate([0,0,-thickness])
+    cube([diameter*10, diameter*10, thickness*40]);
 }
 
 module right_mask()
 {
     rotate([0,0,-45])
-    translate([0,0,-thickness*100])
-    cube([diameter*10, diameter*10, thickness*200]);
+    translate([0,0,-thickness])
+    cube([diameter*10, diameter*10, thickness*40]);
 }
 
 module back_mask()
@@ -716,8 +784,8 @@ module back_mask()
     //union()
     {
         rotate([0,0, -135])
-        translate([0,0,-thickness*100])
-        cube([diameter*10, diameter*10, thickness*200]);
+        translate([0,0,-thickness])
+        cube([diameter*10, diameter*10, thickness*40]);
     }
 }
 
