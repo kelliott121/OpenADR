@@ -19,13 +19,14 @@ uint16_t AngleMap[] = {
 };
 uint16_t Distances[NUM_DISTANCE_SENSORS];
 uint16_t Distances_Previous[NUM_DISTANCE_SENSORS];
+uint8_t DistanceSensorIndex = 0;
 
 
 
 Adafruit_HMC5883_Unified mag = Adafruit_HMC5883_Unified(12345);
 HCSR04* DistanceSensors[] = {
-  new HCSR04(23, 22), new HCSR04(29, 28), new HCSR04(35, 34),
-  new HCSR04(41, 40), new HCSR04(47, 46)
+  new HCSR04(23, 22, 882), new HCSR04(29, 28, 882), new HCSR04(35, 34, 882),
+  new HCSR04(41, 40, 882), new HCSR04(47, 46, 882)
 };
 L9110S motors(9, 8, 3, 2);
 MMA8452Q accel;
@@ -34,37 +35,48 @@ MMA8452Q accel;
 
 uint16_t Heading = 0;
 
+uint16_t TimeSlice = 0;
+uint16_t TimeSlicePrevious = (uint16_t) - 1;
+
 
 
 void setup()
 {
-  initAccelerometer();
-  initCompass();
+  //initAccelerometer();
+  //initCompass();
   initDistanceSensors();
   Serial.begin(115200);
+  Serial.println("Starting");
 }
 
 void loop()
 {
   uint32_t startTime = micros();
-  uint32_t timeSlice = millis() % 1000;
+  TimeSlicePrevious = TimeSlice;
+  TimeSlice = millis() % 1000;
 
-  if (millis() > 60000)
+  if (millis() > 1000)
   {
     motors.forward(0);
     motors.update();
     return;
   }
 
+  // Don't execute on the same timeslice twice
+  if (TimeSlice == TimeSlicePrevious)
+  {
+    return;
+  }
+
   // 1Hz operations
-  if (((timeSlice + 0) % 1000) == 0)
+  if (((TimeSlice + 0) % 1000) == 0)
   {
     //collectData();
     //readCommands();
   }
 
   // 10Hz operations
-  if (((timeSlice - 1) % 100) == 0)
+  if (((TimeSlice - 1) % 100) == 0)
   {
     planRoute();
     Serial.println(motors._motionState);
@@ -72,7 +84,7 @@ void loop()
   }
 
   // 100Hz operations
-  if (((timeSlice - 2) % 10) == 0)
+  if (((TimeSlice - 2) % 10) == 0)
   {
 
     //readAccelerometer();
@@ -83,26 +95,26 @@ void loop()
   }
 
   // 1kHz operations
-  if (((timeSlice + 0) % 1) == 0)
+  if (((TimeSlice + 0) % 1) == 0)
   {
-	Serial.println("Motor Update");
+    //Serial.println("Motor Update");
     motors.update();
     //advanceMotors();
     //readEncoders();
-  }
 
-  uint32_t endTime = micros();
-  uint32_t time = endTime - startTime;
-  //logTiming(timeSlice, time);
-  Serial.print(timeSlice);
-  Serial.print(" : ");
-  Serial.println(time);
+    uint32_t endTime = micros();
+    uint32_t time = endTime - startTime;
+    //logTiming(TimeSlice, time);
+    Serial.print(TimeSlice);
+    Serial.print(" : ");
+    Serial.println(time);
+  }
 }
 
 void planRoute()
 {
-  if ((Distances[DEG_90] < 15) ||
-	  (Distances[DEG_45] < 11) || (Distances[DEG_135] < 11))
+  if ((Distances[DEG_90] < 10) ||
+      (Distances[DEG_45] < 8) || (Distances[DEG_135] < 8))
   {
     Serial.println("TURNING LEFT");
     motors.turnLeft(FULL_SPEED);
@@ -125,12 +137,19 @@ void initDistanceSensors()
 
 void readDistanceSensors()
 {
-  for (uint8_t i = 0; i < NUM_DISTANCE_SENSORS; i++)
-  {
+  /*
+    for (uint8_t i = 0; i < NUM_DISTANCE_SENSORS; i++)
+    {
     Distances_Previous[i] = Distances[i];
-    Distances[i] = DistanceSensors[i]->getDistance(CM, 5);
+    Distances[i] = DistanceSensors[i]->getDistance(CM, 1);
     delayMicroseconds(10);
-  }
+    }
+  */
+  Distances_Previous[DistanceSensorIndex] = Distances[DistanceSensorIndex];
+  Distances[DistanceSensorIndex] = DistanceSensors[DistanceSensorIndex]->getDistance(CM, 1);
+  DistanceSensorIndex = (DistanceSensorIndex + 1) % NUM_DISTANCE_SENSORS;
+  //Serial.print("Distance Sensor Index : ");
+  //Serial.println(DistanceSensorIndex);
 }
 
 void initAccelerometer()
@@ -185,24 +204,24 @@ void readCompass()
 void printDataChunk()
 {
   /*
-  Serial.print("comp=");
-  Serial.println(Heading);
+    Serial.print("comp=");
+    Serial.println(Heading);
 
-  Serial.print("accelX=");
-  Serial.println(accel.x);
-  Serial.print("accelY=");
-  Serial.println(accel.y);
-  Serial.print("accelZ=");
-  Serial.println(accel.z);
-*/
-/*
+    Serial.print("accelX=");
+    Serial.println(accel.x);
+    Serial.print("accelY=");
+    Serial.println(accel.y);
+    Serial.print("accelZ=");
+    Serial.println(accel.z);
+  */
+
   for (uint8_t i = 0; i < NUM_DISTANCE_SENSORS; i++)
   {
     Serial.print("point=");
     Serial.print(AngleMap[i]);
     Serial.print(",");
     Serial.println(Distances[i]);
-  }*/
+  }
   Serial.println("==================================================");
 }
 

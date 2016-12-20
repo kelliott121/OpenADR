@@ -8,7 +8,7 @@ HCSR04::HCSR04(uint8_t triggerPin, uint8_t echoPin)
 	pinMode(echoPin, INPUT);
 	_triggerPin = triggerPin;
 	_echoPin = echoPin;
-	_timeout = 24000;
+	_timeout = 23510;
 }
 
 HCSR04::HCSR04(uint8_t triggerPin, uint8_t echoPin, uint32_t timeout)
@@ -22,7 +22,7 @@ HCSR04::HCSR04(uint8_t triggerPin, uint8_t echoPin, uint32_t timeout)
 
 uint32_t HCSR04::timing()
 {
-	uint32_t duration;
+	uint32_t duration = 0;
 	
 	digitalWrite(_triggerPin, LOW);
 	delayMicroseconds(2);
